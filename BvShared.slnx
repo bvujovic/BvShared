@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BvSharedCore/Bv.Shared.Core.csproj" />
+  <Project Path="BvSharedWinForms/Bv.Shared.WinForms.csproj" Id="a8c98908-d382-4469-b281-876c02e5f44a" />
+</Solution>
