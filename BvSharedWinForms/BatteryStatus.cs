@@ -1,4 +1,8 @@
-﻿namespace Bv.Shared.WinForms
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("WinFormsTests")]
+
+namespace Bv.Shared.WinForms
 {
     /// <summary>
     /// Static class that provides information about the laptop battery status.
@@ -16,6 +20,7 @@
         /// <summary>Percent of battery life remaining [0..100]</summary>
         public static int BatteryLevel => (int)(Status.BatteryLifePercent * 100);
 
+        /// <summary>Default format for battery status like: "86% charging..."</summary>
         public new static string ToString()
         {
             return (Status.BatteryLifePercent * 100) + "%, " +
@@ -49,8 +54,11 @@
                 return Discharging(batteryLevel);
         }
 
+        /// <summary>Handles battery discharging level updates.</summary>
+        /// <param name="batteryLevel">The current battery level.</param>
         private static bool Discharging(int batteryLevel)
         {
+            // Adjust idxBatteryLevelNotifs upwards while battery level is below the current threshold
             var res = false;
             while (batteryLevel <= BatteryLevelNotifs[idxBatteryLevelNotifs])
                 if (idxBatteryLevelNotifs < BatteryLevelNotifs.Length - 1)
@@ -63,8 +71,11 @@
             return res;
         }
 
+        /// <summary>Handles battery charging level updates.</summary>
+        /// <param name="batteryLevel">The current battery level.</param>
         private static void Charging(int batteryLevel)
         {
+            // Adjust idxBatteryLevelNotifs upwards while battery level is above the current threshold
             while (batteryLevel >= BatteryLevelNotifs[idxBatteryLevelNotifs] && idxBatteryLevelNotifs > 0)
                 idxBatteryLevelNotifs--;
 
@@ -75,10 +86,23 @@
             //    break;
         }
 
+        /// <summary>Initializes BatteryLevelNotifs array with battery levels that will trigger notifications.</summary>
         public static void Init(int[] batteryLevelNotifs)
         {
             BatteryLevelNotifs = batteryLevelNotifs;
-            //TODO check if elements of (non empty) array are [0..100] in descending order
+            if (BatteryLevelNotifs.Length > 0)
+            {
+
+                for (int i = 0; i < batteryLevelNotifs.Length; i++)
+                    if (BatteryLevelNotifs[i] < 0 || BatteryLevelNotifs[i] > 100)
+                        throw new ArgumentException("Battery levels must be [0..100]");
+
+                for (int i = 0; i < batteryLevelNotifs.Length - 1; i++)
+                    if (BatteryLevelNotifs[i] <= BatteryLevelNotifs[i + 1])
+                        throw new ArgumentException("Battery levels must be in descending order.");
+            }
+            else
+                throw new ArgumentException("Battery levels array cannot be empty.");
             idxBatteryLevelNotifs = 0;
         }
     }

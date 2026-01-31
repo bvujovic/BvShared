@@ -2,38 +2,54 @@
 
 namespace Bv.Shared.Core
 {
-    public class MyData
+    public static class MyData
     {
-        public MyData(string? appName)
+        /// <summary>Initialize MyData with application name.</summary>
+        public static void Init(string? appName)
         {
             AppName = appName;
         }
 
-        private string? appName;
+        private static string? appName;
 
-        public string? AppName
+        /// <summary>Gets or sets the application name.</summary>
+        public static string? AppName
         {
             get { return appName; }
             set
             {
-                if (appName == value || string.IsNullOrWhiteSpace(value)) return;
+                if (appName == value)
+                    return;
+                if(string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException("AppName cannot be null or whitespace.");
                 appName = value;
-                dataFolderPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", appName);
-                if (!Directory.Exists(dataFolderPath))
-                    Directory.CreateDirectory(dataFolderPath);
+                appFolderPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                    , appFolderLocation, appName);
+                if (!Directory.Exists(appFolderPath))
+                    Directory.CreateDirectory(appFolderPath);
             }
         }
 
-        private string? dataFolderPath;
+        private static readonly string appFolderLocation = "OneDrive\\x\\AppData";
 
-        public string ToPath(string fileName)
+        private static string? appFolderPath;
+
+        /// <summary>Gets the path for the specified file name. File should be located in app folder (OneDrive\x\AppData).</summary>
+        public static string ToPath(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException("File name cannot be null or whitespace.", nameof(fileName));
             if (AppName is null)
                 throw new InvalidOperationException("AppName must be set before calling ToPath.");
-            return Path.Combine(dataFolderPath!, fileName);
+            return Path.Combine(appFolderPath!, fileName);
         }
+
+        /// <summary>Gets or sets the name of the data set file. E.g. "ds.xml"</summary>
+        public static string DataSetFileName { get; set; } = "ds.xml";
+
+        /// <summary>Gets the full file path of the data set file.</summary>
+        public static string GetDataSetFilePath()
+            => ToPath(DataSetFileName);
     }
 }

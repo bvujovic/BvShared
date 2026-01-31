@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/SolutionItems/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="BvSharedCore/Bv.Shared.Core.csproj" />
   <Project Path="BvSharedWinForms/Bv.Shared.WinForms.csproj" Id="a8c98908-d382-4469-b281-876c02e5f44a" />
+  <Project Path="WinFormsTests/WinFormsTests.csproj" Id="c7edccb9-5667-4f7e-a38c-6747e0fad8ae" />
 </Solution>
